@@ -1,0 +1,13 @@
+<objects xmlns="http://www.springframework.net">
+ <object id="ShoppingListCreatorImpl" type="BusinessLogic.DefaultShoppingListCreator, BusinessLogic">
+   <property name="Dao" ref="ShoppingListDaoImpl" />
+ </object>
+  <object id="ShoppingListItemExtractorImpl" type="BusinessLogic.DefaultShoppingListItemExtractor, BusinessLogic">
+    <property name="Dao" ref="ShoppingListDaoImpl" />
+  </object>
+ <object id="ShoppingListDaoImpl" type="DataAccess.MongoShoppingListDao, DataAccess">
+   <constructor-arg name="connectionManager" ref="ConnectionManagerImpl"/>
+   <property name="DBConnectionStringConfigKey" value="Intelligent_Shopping_List"/>
+ </object>
+ <object id="ConnectionManagerImpl" type="Framework.WebConnectionManager, Framework"></object>
+</objects>

@@ -1,0 +1,26 @@
+﻿@using DomainObject
+@model IEnumerable<DomainObject.Item>
+
+@{
+    ViewBag.Title = "ListShoppingListItem";
+}
+
+<h2>ListShoppingListItem</h2>
+<h1>My Shopping Lists</h1>
+
+<table>
+    <thead>
+    <tr>
+        <td>Item </td>
+        <td>Tag</td>
+    </tr>
+    </thead>
+    @foreach (var i in Model)
+    {
+        <tr>
+            <td>@i.ItemName</td>
+            <td>@i.Tag</td>
+        </tr>
+    }
+
+</table>
