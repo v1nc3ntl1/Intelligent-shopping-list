@@ -26,9 +26,24 @@ namespace DataAccess
             set { _dbConnectionStringConfigKey = value; }
         }
 
-        public MongoShoppingListDao(IConnectionManager connectionManager)
+        public MongoShoppingListDao(IConnectionManager connectionManager) : this()
         {
             _connectionManager = connectionManager;
+        }
+
+        public MongoShoppingListDao()
+        {
+            BsonClassMap.RegisterClassMap<ShoppingList>(cm =>
+            {
+                cm.MapProperty(c => c.ListName);
+                cm.MapProperty(c => c.IsActive);
+                cm.SetIdMember(cm.GetMemberMap(c => c.Id));
+            });
+            BsonClassMap.RegisterClassMap<Item>(cm =>
+            {
+                cm.MapProperty(p => p.ItemName);
+                cm.MapProperty(P => P.Tag);
+            });
         }
 
         async public Task<bool> InsertShoppingList(ShoppingList shoppingList)
@@ -65,13 +80,6 @@ namespace DataAccess
 
         async public Task<Collection<ShoppingList>> GetShoppingLists()
         {
-            BsonClassMap.RegisterClassMap<ShoppingList>(cm =>
-            {
-                cm.MapProperty(p => p.ListName);
-                cm.MapProperty(p => p.Item);
-                cm.MapProperty(p => p.IsActive);
-            });
-
             var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
             var database = client.GetDatabase("Intelligent_Shopping_List");
             var collection = database.GetCollection<BsonDocument>("ShoppingList");
@@ -81,9 +89,23 @@ namespace DataAccess
             var final = new Collection<ShoppingList>();
             if (result != null && result.Count > 0)
             {
+                ShoppingList tempHolder;
+                BsonArray rawItems;
+
                 foreach (var item in result)
                 {
-                    final.Add(BsonSerializer.Deserialize<ShoppingList>(item));
+                    tempHolder = BsonSerializer.Deserialize<ShoppingList>(item);
+                    tempHolder.Id = item["_id"].AsObjectId;
+                    rawItems = item["ShoppingListItems"].AsBsonArray;
+                    if (rawItems != null)
+                    {
+                        tempHolder.Item = new Collection<Item>();
+                        foreach (var rawItem in rawItems)
+                        {
+                            tempHolder.Item.Add(BsonSerializer.Deserialize<Item>(rawItem.AsBsonDocument));
+                        }
+                    }
+                    final.Add(tempHolder);
                 }
             }
             return final;

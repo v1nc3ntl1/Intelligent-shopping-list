@@ -4,14 +4,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace DomainObject
 {
     public class ShoppingList
     {
-        private string _id;
+        private ObjectId _id;
 
-        public string ObjectId
+        public ObjectId Id
         {
             get { return _id; }
             set { _id = value; }

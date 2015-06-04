@@ -24,9 +24,9 @@ namespace DomainObject
             set { _itemName = value; }
         }
 
-        private string[] _tag;
+        private string _tag;
 
-        public string[] Tag
+        public string Tag
         {
             get { return _tag; }
             set { _tag = value; }
