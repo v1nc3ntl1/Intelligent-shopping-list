@@ -5,6 +5,9 @@
   <object id="ShoppingListItemExtractorImpl" type="BusinessLogic.DefaultShoppingListItemExtractor, BusinessLogic">
     <property name="Dao" ref="ShoppingListDaoImpl" />
   </object>
+  <object id="ShoppingListServiceImpl" type="BusinessLogic.ShoppingListService, BusinessLogic">
+    <property name="Dao" ref="ShoppingListDaoImpl" />
+  </object>
  <object id="ShoppingListDaoImpl" type="DataAccess.MongoShoppingListDao, DataAccess">
    <constructor-arg name="connectionManager" ref="ConnectionManagerImpl"/>
    <property name="DBConnectionStringConfigKey" value="Intelligent_Shopping_List"/>

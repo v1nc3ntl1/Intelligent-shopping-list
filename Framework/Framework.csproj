@@ -49,6 +49,7 @@
     <Compile Include="SpringFactory.cs" />
     <Compile Include="SpringResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CommonUtility.cs" />
     <Compile Include="WebConnectionManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

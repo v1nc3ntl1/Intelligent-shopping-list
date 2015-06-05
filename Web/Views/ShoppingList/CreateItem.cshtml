@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "CreateItem";
+}
+@model Web.Models.CreateItemViewModel
+<h2>Add New Item</h2>
+
+@Html.LabelFor(x => x.ItemName) &amp; @Html.TextBoxFor(x => x.ItemName) <br/>
+
+@Html.LabelFor(x => x.ListName) &amp;
+@if (Model.AllShoppingList != null && Model.AllShoppingList.Any())
+{
+    @Html.DropDownListFor(x => x.ListName, Model.AllShoppingList)
+}
+<br/>
+@Html.LabelFor(x => x.Tag) &amp;
+@if (Model.AllTags != null && Model.AllTags.Any())
+{
+    @Html.DropDownListFor(x => x.Tag, Model.AllTags)
+}
+<input type="submit" value="Save"/>

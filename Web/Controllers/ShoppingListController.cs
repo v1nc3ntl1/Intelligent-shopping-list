@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -7,6 +8,7 @@ using System.Web.Mvc;
 using BusinessLogic;
 using DomainObject;
 using Framework;
+using Web.Models;
 
 namespace Web.Controllers
 {
@@ -25,11 +27,36 @@ namespace Web.Controllers
             return View();
         }
 
+        async public Task<ActionResult> CreateItem()
+        {
+            CreateItemViewModel model = new CreateItemViewModel();
+
+            IShoppingListService service = SpringResolver.GetObject<IShoppingListService>("ShoppingListServiceImpl");
+            var lists = await service.GetShoppingLists();
+            if (!lists.IsNullOrEmpty())
+            {
+                model.AllShoppingList = new Collection<SelectListItem>();
+                foreach (var item in lists)
+                {
+                    model.AllShoppingList.Add(new SelectListItem() {Text = item, Value = item});
+                }
+                model.AllShoppingList[0].Selected = true;
+            }
+            return View(model);
+        }
+
         [HttpPost]
-        public ActionResult Create(ShoppingList shoppingList)
+        public ActionResult CreateItem(CreateItemViewModel model)
+        {
+            
+            return View();
+        }
+
+        [HttpPost]
+        async public Task<ActionResult> Create(ShoppingList shoppingList)
         {
             IShoppingListCreator creator = SpringResolver.GetObject<IShoppingListCreator>("ShoppingListCreatorImpl");
-            creator.CreateShoppingList(new ShoppingList());
+            bool result = await creator.CreateShoppingList(shoppingList);
             return View();
         }
 

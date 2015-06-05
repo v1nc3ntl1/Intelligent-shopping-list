@@ -43,7 +43,9 @@
     <Compile Include="DefaultShoppingListItemExtractor.cs" />
     <Compile Include="IShoppingListCreator.cs" />
     <Compile Include="IShoppingListItemExtractor.cs" />
+    <Compile Include="IShoppingListService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShoppingListService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj">

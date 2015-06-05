@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 namespace DataAccess
 {
@@ -26,7 +29,8 @@ namespace DataAccess
             set { _dbConnectionStringConfigKey = value; }
         }
 
-        public MongoShoppingListDao(IConnectionManager connectionManager) : this()
+        public MongoShoppingListDao(IConnectionManager connectionManager)
+            : this()
         {
             _connectionManager = connectionManager;
         }
@@ -54,21 +58,29 @@ namespace DataAccess
                 var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
                 var database = client.GetDatabase("Intelligent_Shopping_List");
                 var collection = database.GetCollection<BsonDocument>("ShoppingList");
-                var document = new BsonDocument 
-                { 
-                    { "ListName", "My List 3"},
-                    {
-                        "ShoppingListItems", new BsonArray() 
-                        {
-                            new BsonDocument()
-                        {
-                            {"ItemName", "mouse"},
-                            {"Tag", "mouse"}
-                        }
-                        }
-                    },
-                    {"IsActive", "true"}};
-                await collection.InsertOneAsync(document);
+                //var document = new BsonDocument 
+                //{ 
+                //    { "ListName", "My List 3"},
+                //    {
+                //        "ShoppingListItems", new BsonArray() 
+                //        {
+                //            new BsonDocument()
+                //        {
+                //            {"ItemName", "mouse"},
+                //            {"Tag", "mouse"}
+                //        }
+                //        }
+                //    },
+                //    {"IsActive", "true"}};
+                shoppingList.Id = ObjectId.GenerateNewId();
+                MemoryStream ms = new MemoryStream();
+                using (BsonWriter writer = new BsonWriter(ms))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(writer, shoppingList);
+                }
+
+                await collection.InsertOneAsync(ms.ToBsonDocument());
             }
             catch (Exception)
             {
@@ -83,7 +95,7 @@ namespace DataAccess
             var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
             var database = client.GetDatabase("Intelligent_Shopping_List");
             var collection = database.GetCollection<BsonDocument>("ShoppingList");
-           
+
             var result = await collection.Find(new BsonDocument()).ToListAsync();
             var jsonresult = result.ToJson();
             var final = new Collection<ShoppingList>();

@@ -1,11 +1,15 @@
-﻿@model DomainObject.ShoppingList
+﻿@using System.Activities.Statements
+@using Web.Models
+@model Web.Models.ShoppingListViewModel
 
 @{
     ViewBag.Title = "Create";
 }
 
 <h2>Create</h2>
-@Html.BeginForm("Create", "ShoppingList", FormMethod.Post)
+@using (Html.BeginForm("Create", "ShoppingList", FormMethod.Post))
 {
-    <input type="submit" value="Click"/>
+    @Html.EditorForModel()
+    <br/>
+    <input type="submit" value="Add New"/>
 }
