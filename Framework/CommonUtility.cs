@@ -17,7 +17,7 @@ namespace Framework
             {
                 return !coll.GetEnumerator().MoveNext();
             }
-            return false;
+            return true;
         }
         public static Collection<T> ToCollection<T>(this IEnumerable<T> coll)
         {

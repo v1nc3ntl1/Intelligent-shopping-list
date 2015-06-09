@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess;
 using DomainObject;
+using Framework;
 
 namespace BusinessLogic
 {
@@ -26,9 +27,12 @@ namespace BusinessLogic
             Collection<Item> listItems = new Collection<Item>();
             foreach (ShoppingList list in lists.Where(l => l.IsActive))
             {
-                foreach (var item in list.Item)
+                if (!list.Item.IsNullOrEmpty())
                 {
-                    listItems.Add(item);
+                    foreach (var item in list.Item)
+                    {
+                        listItems.Add(item);
+                    }
                 }
             }
             return listItems;

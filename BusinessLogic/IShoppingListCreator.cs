@@ -11,5 +11,7 @@ namespace BusinessLogic
     public interface IShoppingListCreator
     {
         Task<bool> CreateShoppingList(ShoppingList shoppingList);
+
+        Task<bool> SaveShoppingList(ShoppingList shoppingList);
     }
 }

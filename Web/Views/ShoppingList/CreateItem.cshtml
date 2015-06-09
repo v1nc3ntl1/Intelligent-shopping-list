@@ -2,19 +2,71 @@
     ViewBag.Title = "CreateItem";
 }
 @model Web.Models.CreateItemViewModel
+<script src="~/Scripts/jquery-2.1.4.js"></script>
+<script src="~/Content/Scripts/CreateItem.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/ShoppingList.css">
 <h2>Add New Item</h2>
 
-@Html.LabelFor(x => x.ItemName) &amp; @Html.TextBoxFor(x => x.ItemName) <br/>
+@if (TempData["error"] != null)
+{
+    <span style="background-color: red; border-color: red; border-bottom-width: 2px">@TempData["error"]</span>
+}
 
-@Html.LabelFor(x => x.ListName) &amp;
-@if (Model.AllShoppingList != null && Model.AllShoppingList.Any())
+@using (Html.BeginForm())
 {
-    @Html.DropDownListFor(x => x.ListName, Model.AllShoppingList)
+    @Html.HiddenFor(x => x.ShoppingListId);
+    @Html.HiddenFor(x => x.ListName);
+    @Html.HiddenFor(x => x.Tag);
+    
+    <table>
+        <tr>
+            <td class="FormLabel">
+                @Html.LabelFor(x => x.ItemName)
+                @Html.Encode(":")
+            </td>
+            <td class="FormText">@Html.TextBoxFor(x => x.ItemName)</td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                @Html.LabelFor(x => x.SelectedListName)
+                @Html.Encode(":")
+            </td>
+            <td class="FormText">
+                <div id="divShoppingListDropdown" onclick="CreateItem_ListNameDropdownClick(this)">
+                    <input type="radio" name="rdoShoppingList"/>
+                    @if (Model.AllShoppingList != null && Model.AllShoppingList.Any())
+                    {
+                        @Html.DropDownListFor(x => x.SelectedListName, Model.AllShoppingList, new {onblur = "CreateItem_ListNameOnLeave();"})
+                    }
+                </div>
+                or <br />
+                <div id="divShoppingListTextbox" onclick="CreateItem_ListNameTextboxClick(this)">
+                    <input type="radio" name="rdoShoppingList" />
+                    Enter your List Name :
+                    <br/>
+                    @Html.TextBoxFor(x => x.EnteredListName, new {onblur = "CreateItem_ListNameOnLeave();"})
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">@Html.LabelFor(x => x.Tag) @Html.Encode(":")</td>
+            <td class="FormText">
+                <div id="divTagsDropdown" onclick="CreateItem_TagDropdownClick(this);">
+                    <input type="radio" name="rdoTag"/>
+                    @if (Model.AllTags != null && Model.AllTags.Any())
+                    {
+                        @Html.DropDownListFor(x => x.SelectedTag, Model.AllTags, new {onblur = "CreateItem_TagOnBlur();"})
+                    }
+                </div>
+                or <br/>
+                <div id="divTagsTextbox" onclick="CreateItem_TagTextboxClick(this);">
+                    <input type="radio" name="rdoTag" />
+                    Enter your Tag :
+                    <br/>
+                    @Html.TextBoxFor(x => x.EnteredTag, new {onblur = "CreateItem_TagOnBlur();"})
+                </div>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Save" />
 }
-<br/>
-@Html.LabelFor(x => x.Tag) &amp;
-@if (Model.AllTags != null && Model.AllTags.Any())
-{
-    @Html.DropDownListFor(x => x.Tag, Model.AllTags)
-}
-<input type="submit" value="Save"/>

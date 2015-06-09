@@ -1,0 +1,22 @@
+﻿body {
+}
+table tr td{
+    border-width: 1px;
+    border-color: black;
+    border-style: groove;
+}
+
+#FormLabel {
+    padding: 10px;
+    font-weight: bolder;
+    vertical-align: text-top;
+}
+
+#FormText {
+    padding: 10px;
+    padding-left: 20px;
+}
+
+#divShoppingListDropdown #divShoppingListTextbox #divTagsDropdown #divTagsTextbox {
+    margin: 10px;
+}

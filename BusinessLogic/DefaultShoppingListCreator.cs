@@ -24,5 +24,11 @@ namespace BusinessLogic
             bool success = await Dao.InsertShoppingList(shoppingList);
             return success;
         }
+
+        async public Task<bool> SaveShoppingList(ShoppingList shoppingList)
+        {
+            bool success = await Dao.SaveShoppingList(shoppingList);
+            return success;
+        }
     }
 }

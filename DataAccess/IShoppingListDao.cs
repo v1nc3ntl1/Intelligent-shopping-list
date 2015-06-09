@@ -12,7 +12,9 @@ namespace DataAccess
     {
         Task<bool> InsertShoppingList(ShoppingList shoppingList);
 
-        Task<Collection<ShoppingList>> GetShoppingLists();
+        Task<bool> SaveShoppingList(ShoppingList shoppingList);
+
+        Task<Collection<ShoppingList>> GetShoppingLists(string id = "");
 
         Collection<ShoppingList> GetShoppingLists(bool isActive);
     }
