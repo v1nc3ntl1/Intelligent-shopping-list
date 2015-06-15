@@ -20,6 +20,15 @@ namespace BusinessLogic
             set { _dao = value; }
         }
 
+        private IPromotionDao _promotionDao;
+
+        public IPromotionDao PromotionDao
+        {
+            get { return _promotionDao; }
+            set { _promotionDao = value; }
+        }
+        
+
         async public Task<Collection<string>> GetShoppingLists()
         {
             var list = await Dao.GetShoppingLists();
@@ -30,6 +39,11 @@ namespace BusinessLogic
         {
             var list = await Dao.GetShoppingLists(id);
             return list.IsNullOrEmpty() ? null : list[0];
+        }
+
+        async public Task<Collection<ShoppingList>> GetShoppingListByName(string listName)
+        {
+            return await Dao.GetShoppingListsByName(listName);;
         }
 
         async public Task<Collection<string>> GetTags()
@@ -51,7 +65,14 @@ namespace BusinessLogic
                     }
                 }
             }
+            var promotionTag = await PromotionDao.GetTags();
+            result.AddRange(promotionTag);
             return result;
+        }
+
+        async public Task<Collection<string>> GetBrands()
+        {
+            return await PromotionDao.GetBrands();
         }
     }
 }

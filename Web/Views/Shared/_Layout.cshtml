@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "_Layout";
+}
+
+<html>
+<head>
+    <title>Intelligent Shopping List</title>
+    <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/ShoppingList.css">
+    @RenderSection("Scripts", false)
+</head>
+<body>
+<ul class="MainMenu">
+    <li class="first">@Html.ActionLink("Home", "Index", new {Controller ="Home"})</li>
+    <li>@Html.ActionLink("Promotion Setup", "Index", new {Controller = "Promotion"})</li>
+    <li>@Html.ActionLink("Shopping List Setup", "ListShoppingListItem", new {Controller = "ShoppingList"})</li>
+    <li class="last">Others</li>
+</ul>
+<div id="contentBody">
+    @RenderBody()
+</div>
+</body>
+</html>

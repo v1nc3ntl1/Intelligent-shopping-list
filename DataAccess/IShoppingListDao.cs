@@ -16,6 +16,8 @@ namespace DataAccess
 
         Task<Collection<ShoppingList>> GetShoppingLists(string id = "");
 
+        Task<Collection<ShoppingList>> GetShoppingListsByName(string listName);
+
         Collection<ShoppingList> GetShoppingLists(bool isActive);
     }
 }

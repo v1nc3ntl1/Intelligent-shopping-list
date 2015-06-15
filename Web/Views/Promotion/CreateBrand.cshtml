@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "CreateBrand";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Web.Models.CreateBrandViewModel
+
+@section Scripts{
+    <script type="text/javascript" src="~/Content/Scripts/CreateBrand.js">
+    </script>
+}
+
+@Html.ActionLink("Back", "Create", new {id = Model.PromotionId})
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(x => x.PromotionId)
+    @Html.HiddenFor(x => x.Brand)
+    <table>
+        <tr>
+            <td class="FormLabel">@Html.LabelFor(x => x.Brand)</td>
+            <td class="FormText" onclick="BrandDropdownOnMouseClick();">@Html.DropDownListFor(x => x.SelectedBrand, Model.AllBrand, new { onblur = "onBlur(this);" })</td>
+        </tr>
+        <tr>
+            <td colspan="2">Or</td>
+        </tr>
+        <tr>
+            <td colspan="2">Enter new brand</td>
+        </tr>
+        <tr>
+            <td class="FormLabel"></td>
+            <td class="FormText" onclick="BrandTextBoxOnMouseClick();">@Html.TextBoxFor(x => x.EnteredBrand, new { onblur = "onBlur(this);" })</td>
+        </tr>
+    </table>
+    <input type="submit" value="Add Brand"/>
+}

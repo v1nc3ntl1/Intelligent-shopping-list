@@ -55,8 +55,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseMongoDao.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="IPromotionDao.cs" />
     <Compile Include="IShoppingListDao.cs" />
+    <Compile Include="MongoPromotionDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoShoppingListDao.cs" />
   </ItemGroup>

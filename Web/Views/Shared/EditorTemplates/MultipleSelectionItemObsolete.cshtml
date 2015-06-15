@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "MultipleSelectionItem";
+}
+
+@using System.Collections.ObjectModel
+@using Framework
+@model System.Collections.ObjectModel.Collection<SelectListItem>
+<script type="text/javascript">
+    function AddNew() {
+        var html = "<input type='textbox' id='txtNewItem' /><input type='button' value='Add' onclick='AddNewSelectList();' />";
+        $('#divSelectionContainer').html($('#divSelectionContainer').html() + html);
+    }
+
+    function AddNewSelectList() {
+        var item = $('#txtNewItem').val();
+        var hasSelectionLists = document.getElementById('selectionList') != null;
+        
+        if (hasSelectionLists)
+        {
+            var existingSelectListHtml = $('#selectionList').html();
+            alert(existingSelectListHtml);
+            existingSelectListHtml = existingSelectListHtml +
+                "<option value='" + item + "' selected>" + item + "</option>";
+                $("#selectionList").html(existingSelectListHtml);
+        } else {
+            var html = $("#divSelectionContainer").html() + "<br/>" + 
+                "<select id='selectionList' multiple>" +
+                "<option value='" + item + "' selected>" + item + "</option>" +
+                "</select>";
+            $('#divSelectionContainer').html(html);
+        }
+    }
+</script>
+<div id="divSelectionContainer">
+    @if (!Model.IsNullOrEmpty())
+{
+    @*<select id="selectionList" multiple>
+        @foreach (SelectListItem item in Model)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>*@
+    
+}
+
+@Html.ListBoxFor(x => x, Model, new { id = "selectionList" })
+</div>
+<input type="button" value="Create New" onclick="AddNew()"/>
+

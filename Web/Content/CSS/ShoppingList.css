@@ -20,3 +20,28 @@ table tr td{
 #divShoppingListDropdown #divShoppingListTextbox #divTagsDropdown #divTagsTextbox {
     margin: 10px;
 }
+
+.Box { border-color: black;background-color: lightblue; border-width: 1px;border-style: dot-dash;float: left;margin-left: 5px;margin-right: 5px;margin-top: 5px;margin-bottom: 5px; }
+
+.MainMenu {
+    width: 100%;float: left;
+}
+.MainMenu li{
+    float: left; color: white; border-color: black;background-color: darkblue; border-width: 2px;border-style: groove;margin-left: 10px;margin-right: 5px;margin-top: 5px;margin-bottom: 5px;
+}
+
+.MainMenu li a:visited{
+    color: white;
+}
+
+.MainMenu li .first{
+    margin-left: 0px; 
+}
+
+.MainMenu li .last{
+    margin-right: 0px;
+}
+
+.error {
+    width: 100%;border-color: red;border-width: 2px;border-style: solid;background-color: lightpink;color: red;font-weight: bold;
+}

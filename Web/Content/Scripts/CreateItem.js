@@ -51,9 +51,11 @@ function CreateItem_TagOnBlur() {
 }
 
 $(document).ready(function() {
-    $("#ListName").val('');
+    if ($("#SelectedListName").val() != null)
+        $("#ListName").val($("#SelectedListName").val());
     $("#divShoppingListTextbox :input").attr('disabled', true);
-    $("#Tag").val('');
+    if ($("#SelectedTag").val() != null)
+        $("#Tag").val($("#SelectedTag").val());
     $("#divTagsTextbox :input").attr('disabled', true);
 
     $("#divShoppingListDropdown :radio").attr('checked', 'checked');

@@ -39,8 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultPromotionCreator.cs" />
+    <Compile Include="DefaultPromotionExtractor.cs" />
     <Compile Include="DefaultShoppingListCreator.cs" />
     <Compile Include="DefaultShoppingListItemExtractor.cs" />
+    <Compile Include="IPromotionCreator.cs" />
+    <Compile Include="IPromotionExtractor.cs" />
     <Compile Include="IShoppingListCreator.cs" />
     <Compile Include="IShoppingListItemExtractor.cs" />
     <Compile Include="IShoppingListService.cs" />

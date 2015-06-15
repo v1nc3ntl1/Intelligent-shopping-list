@@ -2,15 +2,30 @@
  <object id="ShoppingListCreatorImpl" type="BusinessLogic.DefaultShoppingListCreator, BusinessLogic">
    <property name="Dao" ref="ShoppingListDaoImpl" />
  </object>
+  <object id="PromotionCreatorImpl" type="BusinessLogic.DefaultPromotionCreator, BusinessLogic">
+    <property name="Dao" ref="PromotionDaoImpl" />
+  </object>
+  <object id="PromotionExtractorImpl" type="BusinessLogic.DefaultPromotionExtractor, BusinessLogic">
+    <property name="Dao" ref ="PromotionDaoImpl" />
+  </object>
   <object id="ShoppingListItemExtractorImpl" type="BusinessLogic.DefaultShoppingListItemExtractor, BusinessLogic">
     <property name="Dao" ref="ShoppingListDaoImpl" />
   </object>
   <object id="ShoppingListServiceImpl" type="BusinessLogic.ShoppingListService, BusinessLogic">
     <property name="Dao" ref="ShoppingListDaoImpl" />
+    <property name="PromotionDao" ref="PromotionDaoImpl" />
   </object>
  <object id="ShoppingListDaoImpl" type="DataAccess.MongoShoppingListDao, DataAccess">
    <constructor-arg name="connectionManager" ref="ConnectionManagerImpl"/>
-   <property name="DBConnectionStringConfigKey" value="Intelligent_Shopping_List"/>
+   <constructor-arg name="dbConnectionStringConfigKey" value="Intelligent_Shopping_List"/>
+   <constructor-arg name="databaseName" value="Intelligent_Shopping_List"/>
+   <property name="ShoppingListTableName" value="ShoppingList"/>
  </object>
+  <object id="PromotionDaoImpl" type="DataAccess.MongoPromotionDao, DataAccess">
+    <constructor-arg name="connectionManager" ref="ConnectionManagerImpl"/>
+    <constructor-arg name="dbConnectionStringConfigKey" value="Intelligent_Shopping_List"/>
+    <constructor-arg name="databaseName" value="Intelligent_Shopping_List"/>
+    <property name="PromotionTableName" value="Promotion"/>
+  </object>
  <object id="ConnectionManagerImpl" type="Framework.WebConnectionManager, Framework"></object>
 </objects>

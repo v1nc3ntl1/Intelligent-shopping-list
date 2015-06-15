@@ -104,6 +104,18 @@ namespace Web.Controllers
                 shoppingList.Item = existing.Item;
                 shoppingList.IsActive = existing.IsActive;
             }
+            else if (!string.IsNullOrEmpty(model.SelectedListName))
+            {
+                //If user selected an existing list name
+                var existing = await ShoppingListService.GetShoppingListByName(model.SelectedListName);
+                if (!existing.IsNullOrEmpty())
+                {
+                    var firstMatch = existing.FirstOrDefault();
+                    shoppingList.Id = firstMatch.Id;
+                    shoppingList.Item = firstMatch.Item;
+                    shoppingList.IsActive = firstMatch.IsActive;
+                }
+            }
                 
             shoppingList.ListName = model.ListName;
             if (shoppingList.Item == null) shoppingList.Item = new Collection<Item>();

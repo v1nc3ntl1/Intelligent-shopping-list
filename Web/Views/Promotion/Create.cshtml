@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Framework
+@model Web.Models.CreatePromotionViewModel
+
+<h2>Create / Edit Promotion</h2>
+@Html.ActionLink("Back to Listing", "Index")
+
+    @if (TempData["error"] != null)
+    {
+        <ul class="error"><li>@Html.Raw(TempData["error"].ToString())</li></ul>
+    }
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(x => x.Id)
+    <table>
+        <tr>
+            <td>@Html.LabelFor(x => x.Name)</td>
+            <td>@Html.TextBoxFor(x => x.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.EffectiveDateTime)</td>
+            <td>@Html.EditorFor(x => x.EffectiveDateTime)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.EffectiveEndDateTime)</td>
+            <td>@Html.EditorFor(x => x.EffectiveEndDateTime)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Location)</td>
+            <td>@Html.TextBoxFor(x => x.Location)</td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Brands)</td>
+            <td>
+                @if (!Model.Brands.IsNullOrEmpty())
+                {
+                    <ul>
+                        @foreach (var brand in Model.Brands)
+                        {
+                            <li>@Html.Raw(brand)</li>
+                        }
+                    </ul>
+                }
+                @if (!string.IsNullOrEmpty(Model.Id))
+                {
+                    @Html.ActionLink("Add New Brand", "CreateBrand", new { promotionId = Model.Id})    
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.LabelFor(x => x.Tags)</td>
+            <td>
+                @if (!Model.Tags.IsNullOrEmpty())
+                {
+                    <ul>
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <li>@Html.Raw(tag)</li>
+                        }
+                    </ul>
+                }
+                @if (!string.IsNullOrEmpty(Model.Id))
+                {
+                    @Html.ActionLink("Add New Tag", "CreateTag", new {promotionId = Model.Id})
+                }
+            </td>
+        </tr>
+    </table>
+
+    <br/>
+    <input type="submit" value="Submit" />
+}

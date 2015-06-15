@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "EditDate";
+}
+<script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery-ui-1.11.4.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".DatePicker").datepicker();
+    });
+</script>
+@Html.TextBoxFor(x => x, new {@class ="DatePicker", @readonly="readonly"});

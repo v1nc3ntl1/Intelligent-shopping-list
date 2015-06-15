@@ -17,22 +17,26 @@ using Newtonsoft.Json.Bson;
 
 namespace DataAccess
 {
-    public class MongoShoppingListDao : IShoppingListDao
+    public class MongoShoppingListDao : BaseMongoDao, IShoppingListDao
     {
         private IConnectionManager _connectionManager;
 
-        private string _dbConnectionStringConfigKey;
+        private string _shoppingListTableName;
 
-        public string DBConnectionStringConfigKey
+        public string ShoppingListTableName
         {
-            get { return _dbConnectionStringConfigKey; }
-            set { _dbConnectionStringConfigKey = value; }
+            get { return _shoppingListTableName; }
+            set { _shoppingListTableName = value; }
         }
+      
+        private IMongoDatabase _shoppingListDatabase;
 
-        public MongoShoppingListDao(IConnectionManager connectionManager)
+        public MongoShoppingListDao(IConnectionManager connectionManager, string dbConnectionStringConfigKey, string databaseName)
             : this()
         {
             _connectionManager = connectionManager;
+            var client = new MongoClient(_connectionManager.GetConnectionString(dbConnectionStringConfigKey));
+            _shoppingListDatabase = client.GetDatabase(databaseName);
         }
 
         public MongoShoppingListDao()
@@ -44,11 +48,6 @@ namespace DataAccess
                 cm.MapProperty(c => c.Item).SetElementName("ShoppingListItems");
                 cm.SetIdMember(cm.GetMemberMap(c => c.Id));
             });
-            BsonClassMap.RegisterClassMap<Item>(cm =>
-            {
-                cm.MapProperty(p => p.ItemName).SetElementName("ItemName");
-                cm.MapProperty(P => P.Tag).SetElementName("Tag");
-            });
         }
 
         async public Task<bool> InsertShoppingList(ShoppingList shoppingList)
@@ -56,9 +55,8 @@ namespace DataAccess
             bool success = true;
             try
             {
-                var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
-                var database = client.GetDatabase("Intelligent_Shopping_List");
-                var collection = database.GetCollection<BsonDocument>("ShoppingList");
+                var collection = _shoppingListDatabase.GetCollection<BsonDocument>(ShoppingListTableName);
+
                 //var document = new BsonDocument 
                 //{ 
                 //    { "ListName", "My List 3"},
@@ -95,9 +93,7 @@ namespace DataAccess
 
             try
             {
-                var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
-                var database = client.GetDatabase("Intelligent_Shopping_List");
-                var collection = database.GetCollection<BsonDocument>("ShoppingList");
+                var collection = _shoppingListDatabase.GetCollection<BsonDocument>(ShoppingListTableName);
 
                 var filter = new BsonDocument("_id", shoppingList.Id);
                 await collection.ReplaceOneAsync(filter, shoppingList.ToBsonDocument(typeof(ShoppingList)));
@@ -112,22 +108,35 @@ namespace DataAccess
 
         async public Task<Collection<ShoppingList>> GetShoppingLists(string id = "")
         {
-            var client = new MongoClient(_connectionManager.GetConnectionString(DBConnectionStringConfigKey));
-            var database = client.GetDatabase("Intelligent_Shopping_List");
-            var collection = database.GetCollection<BsonDocument>("ShoppingList");
+            var collection = _shoppingListDatabase.GetCollection<BsonDocument>(ShoppingListTableName);
+            
             var filter = string.IsNullOrEmpty(id) ? new BsonDocument() : new BsonDocument {{"_id", ObjectId.Parse(id)}};
 
+            var result = await collection.Find(filter).ToListAsync();
+            return convertShoppingListToCollection(result);
+        }
+
+        async public Task<Collection<ShoppingList>> GetShoppingListsByName(string listName)
+        {
+            var collection = _shoppingListDatabase.GetCollection<BsonDocument>(ShoppingListTableName);
+            
+            var filter = new BsonDocument { { "ListName", listName } };
 
             var result = await collection.Find(filter).ToListAsync();
-            var jsonresult = result.ToJson();
+            return convertShoppingListToCollection(result);
+        }
+
+        private Collection<ShoppingList> convertShoppingListToCollection(List<BsonDocument> rawList)
+        {
+            var jsonresult = rawList.ToJson();
             var final = new Collection<ShoppingList>();
-            if (result != null && result.Count > 0)
+            if (rawList != null && rawList.Count > 0)
             {
                 ShoppingList tempHolder;
                 BsonArray rawItems;
                 BsonElement tempBsonElement;
 
-                foreach (var item in result)
+                foreach (var item in rawList)
                 {
                     tempHolder = BsonSerializer.Deserialize<ShoppingList>(item);
                     tempHolder.Id = item["_id"].AsObjectId;
@@ -144,6 +153,16 @@ namespace DataAccess
                 }
             }
             return final;
+        }
+
+        /// <summary>
+        /// This piece of code is not tested yet.
+        /// </summary>
+        /// <param name="collectionName"></param>
+        async private void CreateCollection(string collectionName)
+        {
+            await _shoppingListDatabase.CreateCollectionAsync(collectionName,
+                new CreateCollectionOptions() {MaxSize = 10000, Capped = true});
         }
 
         public Collection<ShoppingList> GetShoppingLists(bool isActive)

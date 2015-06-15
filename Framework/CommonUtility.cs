@@ -40,5 +40,20 @@ namespace Framework
             }
             return coll.ToCollection();
         }
+
+        public static void AddRange<T>(this Collection<T> coll, Collection<T> coll2)
+        {
+            if (coll == null)
+            {
+                coll = new Collection<T>();
+            }
+            if (!coll2.IsNullOrEmpty())
+            {
+                foreach (var item in coll2)
+                {
+                    coll.Add(item);
+                }
+            }
+        }
     }
 }

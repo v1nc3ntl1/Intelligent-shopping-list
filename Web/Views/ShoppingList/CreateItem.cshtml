@@ -1,10 +1,12 @@
 ﻿@{
     ViewBag.Title = "CreateItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model Web.Models.CreateItemViewModel
-<script src="~/Scripts/jquery-2.1.4.js"></script>
-<script src="~/Content/Scripts/CreateItem.js"></script>
-<link rel="stylesheet" type="text/css" href="~/Content/CSS/ShoppingList.css">
+@section Scripts{
+    <script src="~/Content/Scripts/CreateItem.js"></script>
+}
+
 <h2>Add New Item</h2>
 
 @if (TempData["error"] != null)

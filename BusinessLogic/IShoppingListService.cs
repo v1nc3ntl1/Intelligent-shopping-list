@@ -14,6 +14,10 @@ namespace BusinessLogic
 
         Task<ShoppingList> GetShoppingList(string id);
 
+        Task<Collection<ShoppingList>> GetShoppingListByName(string listName);
+
         Task<Collection<string>> GetTags();
+
+        Task<Collection<string>> GetBrands();
     }
 }

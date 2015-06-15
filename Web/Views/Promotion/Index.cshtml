@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Framework
+@model System.Collections.ObjectModel.Collection<Web.Models.PromotionViewModel>
+
+<h2>All Promotion</h2>
+
+@if (!Model.IsNullOrEmpty())
+{
+    <table>
+        <thead>
+        <tr>
+            <th>Promotion Name</th>
+            <th>Effective Date</th>
+            <th>Effective End Date</th>
+            <th>Location</th>
+            <th>Brand</th>
+            <th>Item</th>
+            <th>Tag</th>
+            <th></th>
+        </tr>
+        </thead>
+        @foreach (var promotion in Model)
+        {
+            <tr>
+                <td>@promotion.PromotionName</td>
+                <td>@promotion.EffectiveDateTime.Date</td>
+                <td>@promotion.EffectiveEndDateTime.Date</td>
+                <td>@promotion.Location</td>
+                <td>
+                    @if (!promotion.Brands.IsNullOrEmpty())
+                    {
+                        foreach (var brand in promotion.Brands)
+                        {
+                            <div class="Box">@brand</div>
+                        }
+                    }
+                </td>
+                <td>
+                    @if (!promotion.Items.IsNullOrEmpty())
+                    {
+                        foreach (var item in promotion.Items)
+                        {
+                            <div class="Box">@item</div>
+                        }
+                    }
+                </td>
+                <td>
+                    @if (!promotion.Tags.IsNullOrEmpty())
+                    {
+                        foreach (var tag in promotion.Tags)
+                        {
+                            <div class="Box">@tag</div>
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Create", new {id = @promotion.Id})
+                </td>
+            </tr>
+        }
+    </table>
+}
+<br/>
+@Html.ActionLink("Create Promotion", "Create")

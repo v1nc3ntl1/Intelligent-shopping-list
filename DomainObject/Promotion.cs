@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace DomainObject
 {
     public class Promotion
     {
-        private string _id;
+        private ObjectId _id;
 
-        public string ObjectId
+        public ObjectId Id
         {
             get { return _id; }
             set { _id = value; }
@@ -25,9 +27,9 @@ namespace DomainObject
             set { _name = value; }
         }
 
-        private Item[] _items;
+        private Collection<Item> _items;
 
-        public Item[] PromotionItems
+        public Collection<Item> PromotionItems
         {
             get { return _items; }
             set { _items = value; }
@@ -49,9 +51,9 @@ namespace DomainObject
             set { _effectiveEndDateTime = value; }
         }
 
-        private string[] _brands;
+        private Collection<string> _brands;
 
-        public string[] Brands
+        public Collection<string> Brands
         {
             get { return _brands; }
             set { _brands = value; }
