@@ -15,15 +15,24 @@ namespace Web.Controllers
 {
     public class PromotionController : Controller
     {
-        //
-        // GET: /Promotion/
+
+        /// <summary>
+        /// The _shopping list service
+        /// </summary>
         private IShoppingListService _shoppingListService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PromotionController"/> class.
+        /// </summary>
         public PromotionController()
         {
             _shoppingListService = SpringResolver.GetObject<IShoppingListService>("ShoppingListServiceImpl");
         }
 
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns></returns>
         async public Task<ActionResult> Index()
         {
             var extractor = SpringResolver.GetObject<IPromotionExtractor>("PromotionExtractorImpl");
@@ -50,6 +59,11 @@ namespace Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
         async public Task<ActionResult> Create(string id)
         {
             CreatePromotionViewModel model = new CreatePromotionViewModel();
@@ -73,6 +87,11 @@ namespace Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost]
         async public Task<ActionResult> Create(CreatePromotionViewModel model)
         {
@@ -105,6 +124,11 @@ namespace Web.Controllers
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Creates the brand.
+        /// </summary>
+        /// <param name="promotionId">The promotion identifier.</param>
+        /// <returns></returns>
         async public Task<ActionResult> CreateBrand(string promotionId)
         {
             var allBrands = await this._shoppingListService.GetBrands();
@@ -124,6 +148,11 @@ namespace Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates the brand.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost]
         async public Task<ActionResult> CreateBrand(CreateBrandViewModel model)
         {
@@ -151,6 +180,11 @@ namespace Web.Controllers
             return await CreateBrand(promotion.Id.ToString());
         }
 
+        /// <summary>
+        /// Creates the tag.
+        /// </summary>
+        /// <param name="promotionId">The promotion identifier.</param>
+        /// <returns></returns>
         async public Task<ActionResult> CreateTag(string promotionId)
         {
             var allTag = await this._shoppingListService.GetTags();
@@ -172,6 +206,11 @@ namespace Web.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates the tag.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
         [HttpPost]
         async public Task<ActionResult> CreateTag(CreateTagViewModel model)
         {

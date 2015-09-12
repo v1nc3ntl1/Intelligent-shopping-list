@@ -35,7 +35,7 @@ namespace DomainObject
             set { _items = value; }
         }
 
-        private DateTime _effectiveDateTime;
+        private DateTime _effectiveDateTime = DateTime.MinValue;
 
         public DateTime EffectiveDateTime
         {
@@ -43,7 +43,7 @@ namespace DomainObject
             set { _effectiveDateTime = value; }
         }
 
-        private DateTime _effectiveEndDateTime;
+        private DateTime _effectiveEndDateTime = DateTime.MaxValue;
 
         public DateTime EffectiveEndDateTime
         {
@@ -66,6 +66,14 @@ namespace DomainObject
             get { return _location; }
             set { _location = value; }
         }
-        
+
+        private string _description;
+
+        public string Description
+        {
+          get { return _description; }
+          set { _description = value; }
+        }
+      
     }
 }
