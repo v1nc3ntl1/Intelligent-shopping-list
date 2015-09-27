@@ -50,7 +50,26 @@
     <StartupObject>WindowsService.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BusinessLogic">
+      <HintPath>..\References\BusinessLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="DomainObject">
+      <HintPath>..\References\DomainObject.dll</HintPath>
+    </Reference>
+    <Reference Include="External">
+      <HintPath>..\References\External.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework">
+      <HintPath>..\References\Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="HigLabo.Rss">
+      <HintPath>..\References\HigLabo.Rss.dll</HintPath>
+    </Reference>
+    <Reference Include="Parser">
+      <HintPath>..\References\Parser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -78,7 +97,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -105,7 +126,13 @@
       <DependentUpon>PromotionCollector.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\Spring_Configuration.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y "$(TargetDir)" "$(SolutionDir)\exe\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -48,6 +48,9 @@ namespace DataAccess
             BsonClassMap.RegisterClassMap<Promotion>(cm =>
             {
                 cm.MapProperty(c => c.PromotionName).SetElementName("PromotionName");
+                cm.MapProperty(c => c.Description).SetElementName("Description");
+                cm.MapProperty(c => c.Link).SetElementName("Link");
+                cm.MapProperty(c => c.Html).SetElementName("Html");
                 cm.MapProperty(c => c.EffectiveDateTime).SetElementName("EffectiveDateTime");
                 cm.MapProperty(c => c.EffectiveEndDateTime).SetElementName("EffectiveEndDateTime");
                 cm.MapProperty(c => c.Location).SetElementName("Location");
@@ -106,6 +109,17 @@ namespace DataAccess
 
             var result = await collection.Find(filter).ToListAsync();
             return convertPromotionToCollection(result);
+        }
+
+        async public Task<Collection<Promotion>> GetPromotion(DateTime effectiveDateTime)
+        {
+          var collection = _promotionDatabase.GetCollection<BsonDocument>(PromotionTableName);
+
+          var builder = Builders<BsonDocument>.Filter;
+          var filter = builder.Gt("EffectiveDateTime", effectiveDateTime);
+
+          var result = await collection.Find(filter).ToListAsync();
+          return convertPromotionToCollection(result);
         }
 
         async public Task<Collection<Promotion>> GetPromotion(Collection<string> tag)

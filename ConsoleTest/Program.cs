@@ -18,6 +18,7 @@ namespace ConsoleTest
     {
       //GetRSSPromotion();
       DemoPullPromotion();
+      //GetPromotionInFile();
       Console.Read();
     }
 
@@ -48,6 +49,27 @@ namespace ConsoleTest
       }
     }
 
+    async private static void GetPromotionInFile()
+    {
+      var extrator = SpringResolver.GetObject<IPromotionExtractor>("PromotionExtractorImpl");
+      var promotions = await extrator.GetActivePromotion();
+      foreach (var item in promotions)
+      {
+        Console.WriteLine("PromotionName  :" + item.PromotionName);
+        Console.WriteLine("Description  :" + item.Description);
+        Console.WriteLine("EffectiveDatetime  :" + item.EffectiveDateTime);
+        if (item.PromotionItems != null)
+        {
+          foreach (Item promotionItem in item.PromotionItems)
+          {
+            Console.WriteLine("Category  :" + promotionItem.Tag);
+          }
+        }
+        ;
+        Console.WriteLine("-------------------------------------");
+      }
+    }
+
     async private static void DemoPullPromotion()
     {
       var rssFeed = External.HigLabFascade.GetRss("http://www.shoppingnsales.com/feed/");
@@ -63,15 +85,7 @@ namespace ConsoleTest
           Promotion promotion;
           foreach (var item in result)
           {
-            promotion = new Promotion()
-            {
-              PromotionName = item.PromotionName,
-              EffectiveDateTime = item.EffectiveDateTime,
-              Description = item.Description,
-              PromotionItems = item.PromotionItems
-            };
-
-            await creator.SavePromotion(promotion);
+            await creator.SavePromotion(item);
           }
         }
       }

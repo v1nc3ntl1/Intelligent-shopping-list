@@ -37,6 +37,8 @@ namespace Parser
             PromotionName = item.Title,
             Description = item.Description,
             PromotionItems = new Collection<Item>(),
+            Link = item.Link,
+            Html = item.MiscData.ContainsKey("encoded") ? item.MiscData["encoded"] : "",
             EffectiveDateTime = item.PubDate.HasValue ? item.PubDate.Value.Date : DateTime.MinValue
           };
 

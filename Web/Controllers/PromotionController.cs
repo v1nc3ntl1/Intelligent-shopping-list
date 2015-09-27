@@ -60,6 +60,36 @@ namespace Web.Controllers
         }
 
         /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns></returns>
+        async public Task<ActionResult> Active()
+        {
+          var extractor = SpringResolver.GetObject<IPromotionExtractor>("PromotionExtractorImpl");
+          var allPromotion = await extractor.GetActivePromotion();
+
+          Collection<PromotionViewModel> model = model = new Collection<PromotionViewModel>();
+          if (!allPromotion.IsNullOrEmpty())
+          {
+            foreach (var promotion in allPromotion)
+            {
+              model.Add(new PromotionViewModel()
+              {
+                Id = promotion.Id.ToString(),
+                EffectiveDateTime = promotion.EffectiveDateTime,
+                EffectiveEndDateTime = promotion.EffectiveEndDateTime,
+                Brands = promotion.Brands.Safely().Distinct().ToCollection(),
+                Location = promotion.Location,
+                PromotionName = promotion.PromotionName,
+                Items = promotion.PromotionItems.Safely().Select(i => i.ItemName).ToCollection(),
+                Tags = promotion.PromotionItems.Safely().Select(i => i.Tag).Distinct().ToCollection()
+              });
+            }
+          }
+          return View("Index", model);
+        }
+
+        /// <summary>
         /// Creates the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>

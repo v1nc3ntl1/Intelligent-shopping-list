@@ -74,6 +74,21 @@ namespace DomainObject
           get { return _description; }
           set { _description = value; }
         }
-      
+
+        private string _link;
+
+        public string Link
+        {
+          get { return _link; }
+          set { _link = value; }
+        }
+
+        private string html;
+
+        public string Html
+        {
+          get { return html; }
+          set { html = value; }
+        }
     }
 }

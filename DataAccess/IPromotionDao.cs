@@ -14,6 +14,8 @@ namespace DataAccess
 
         Task<Collection<Promotion>> GetPromotion(string id = "");
 
+        Task<Collection<Promotion>> GetPromotion(DateTime effectiveDateTime);
+
         Task<Collection<Promotion>> GetPromotion(Collection<string> tag);
 
         Task<Collection<string>> GetBrands();

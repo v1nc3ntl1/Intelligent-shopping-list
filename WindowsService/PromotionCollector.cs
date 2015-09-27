@@ -8,12 +8,22 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Configuration;
 
 namespace WindowsService
 {
+  using System.Collections.ObjectModel;
+  using BusinessLogic;
+  using DomainObject;
+  using Framework;
+  using HigLabo.Rss;
+  using Parser;
+
   public partial class PromotionCollector : ServiceBase
   {
     private int eventId;
+    private int PollInterval = 1;
+    private const int MiliSecondsPerMinute = 60000;
     public PromotionCollector(string[] args)
     {
       InitializeComponent();
@@ -40,8 +50,19 @@ namespace WindowsService
       eventLog1.Log = logName;
     }
 
+    private void Init()
+    {
+      var poolSetting = ConfigurationManager.AppSettings["PollInterval"];
+      eventLog1.WriteEntry(string.Format("PollInterval is set at {0}", poolSetting));
+      if (!int.TryParse(poolSetting, out PollInterval))
+      {
+        PollInterval = 60;
+      }
+    }
+
     protected override void OnStart(string[] args)
     {
+      Init();
       // Update the service state to Start Pending.
       ServiceStatus serviceStatus = new ServiceStatus();
       serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
@@ -50,9 +71,9 @@ namespace WindowsService
 
       eventLog1.WriteEntry("In OnStart");
 
-      System.Timers.Timer timer = new System.Timers.Timer();
-      timer.Interval = 5 * 60000; // 5 minutes
-      timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
+      var timer = new System.Timers.Timer();
+      timer.Interval = PollInterval * MiliSecondsPerMinute; 
+      timer.Elapsed += this.OnTimer;
       timer.Start();
 
       // Update the service state to Running.
@@ -60,11 +81,103 @@ namespace WindowsService
       SetServiceStatus(this.ServiceHandle, ref serviceStatus);
     }
 
-    private void OnTimer(object sender, System.Timers.ElapsedEventArgs e)
+    async private void OnTimer(object sender, System.Timers.ElapsedEventArgs e)
     {
-      // TODO: Insert monitoring activities here.
-      eventLog1.WriteEntry("Monitoring the PromotionCollector", EventLogEntryType.Information, eventId++);
+      eventLog1.WriteEntry(string.Format("Start Pooling Rss Feed at {0:yyyy/MM/dd hh:mm:ss}", DateTime.Now), EventLogEntryType.Information, eventId++);
 
+      string[] allRssFeedUrl = null;
+      try
+      {
+        allRssFeedUrl = ConfigurationManager.AppSettings["PromotionRSSSites"].Split('|');
+      }
+      catch (Exception ex)
+      {
+        eventLog1.WriteEntry("Error getting from settings PromotionRSSSites from appsettings.", EventLogEntryType.Error);
+      }
+
+      if (allRssFeedUrl.Length > 0)
+      {
+        Collection<Promotion> promotions = null;
+
+        try
+        {
+          var extrator = SpringResolver.GetObject<IPromotionExtractor>("PromotionExtractorImpl");
+          promotions = await extrator.GetActivePromotion();
+        }
+        catch (Exception ex)
+        {
+          eventLog1.WriteEntry(string.Format("Error getting active promotion from database \n {0}", ex.Message), EventLogEntryType.Error);
+        }
+
+        var creator = SpringResolver.GetObject<IPromotionCreator>("PromotionCreatorImpl");
+
+        foreach (var feed in allRssFeedUrl)
+        {
+          RssFeed rssFeed;
+
+          try
+          {
+            rssFeed = External.HigLabFascade.GetRss(feed.Trim());
+          }
+          catch (Exception ex)
+          {
+            eventLog1.WriteEntry(string.Format("Error getting feed from url {0} \n {1}", feed, ex.Message), EventLogEntryType.Error);
+            continue;
+          }
+
+          if (rssFeed != null)
+          {
+            var parser = new SNSRssParser<Promotion, RssFeed>();
+
+            IEnumerable<Promotion> result = null;
+            try
+            {
+              result = parser.Parse(rssFeed);
+            }
+            catch (Exception ex)
+            {
+              eventLog1.WriteEntry(string.Format("Error Parsing from url {0} \n {1}", feed, ex.Message), EventLogEntryType.Error);
+              continue;
+            }
+
+            if (result != null)
+            {
+              if (!promotions.IsNullOrEmpty())
+              {
+                result = result.Where(r => !promotions.Any(p => string.Equals(p.PromotionName, r.PromotionName, StringComparison.InvariantCultureIgnoreCase)));
+              }
+
+              if (result != null)
+              {
+                foreach (var promo in result)
+                {
+                  try
+                  {
+                    await creator.SavePromotion(promo);
+                  }
+                  catch (Exception ex)
+                  {
+                    eventLog1.WriteEntry(string.Format("Error Saving promotion {0} from url {1} \n {2}", promo.PromotionName, feed, ex.Message), EventLogEntryType.Error);
+                  }
+                }
+              }
+              else
+              {
+                eventLog1.WriteEntry(string.Format("All Promotion exists in the sysatem. No promotion will be save.", feed), EventLogEntryType.Warning);
+              }
+            }
+            else
+            {
+              eventLog1.WriteEntry(string.Format("Parsing from {0} resulting in null", feed), EventLogEntryType.Warning);
+            }
+          }
+          else
+          {
+            eventLog1.WriteEntry(string.Format("No promotions return from website : {0}", feed), EventLogEntryType.Warning);
+          }
+        }
+      }
+      eventLog1.WriteEntry(string.Format("End Pooling Rss Feed at {0:yyyy/MM/dd hh:mm:ss}", DateTime.Now), EventLogEntryType.Information, eventId++);
     }
 
     protected override void OnStop()
