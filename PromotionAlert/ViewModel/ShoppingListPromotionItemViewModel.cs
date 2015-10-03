@@ -23,5 +23,9 @@ namespace PromotionAlert.ViewModel
     public string PromotionTags { get; set; }
 
     public string PromotionItems { get; set; }
+
+    public string Link { get; set; }
+
+    public string Html { get; set; }
   }
 }

@@ -13,6 +13,7 @@ namespace PromotionAlert
   using System.Collections;
   using System.Collections.ObjectModel;
   using System.Configuration;
+  using System.Diagnostics;
   using BusinessLogic;
   using DomainObject;
   using Framework;
@@ -21,8 +22,8 @@ namespace PromotionAlert
   public partial class Alert : Form
   {
     private int PollInterval = 1;
+    private static int linkColumnIndex = 0;
     private const int MiliSecondsPerMinute = 60000;
-    private readonly Hashtable Sizes;
 
     public Alert()
     {
@@ -35,10 +36,8 @@ namespace PromotionAlert
         PollInterval = 60;
       }
       timer1.Interval = PollInterval * MiliSecondsPerMinute;
-
-      Sizes= new Hashtable();
-      Sizes.Add(this.dataGridView1.Name, this.dataGridView1.Size);
-      Sizes.Add(this.listBox1.Name, this.listBox1.Size);
+      SetLayout();
+      this.dataGridView1.CellContentClick += DataGridView1_CellContentClick;
     }
 
     private void timer1_Tick(object sender, EventArgs e)
@@ -47,6 +46,15 @@ namespace PromotionAlert
       this.dataGridView1.DataSource = null;
       ShowAlert();
       listBox1.Items.Add(string.Format("End of screen refresh : {0:yyyy-MM-dd hh:mm:ss}", DateTime.Now));
+    }
+
+    private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+    {
+      if (e.ColumnIndex == linkColumnIndex)
+      {
+        ProcessStartInfo sInfo = new ProcessStartInfo((string)dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+        Process.Start(sInfo);
+      }
     }
 
     protected override void OnResize(EventArgs e)
@@ -66,6 +74,22 @@ namespace PromotionAlert
       {
         notifyIcon1.Visible = false;
       }
+      SetLayout();
+    }
+
+    private void SetLayout()
+    {
+      int marginLeft, marginRight, marginTop, marginBottom;
+      marginLeft = marginRight = marginTop = marginBottom = 10;
+      
+      if (FormWindowState.Normal == this.WindowState || this.WindowState == FormWindowState.Maximized)
+      {
+        dataGridView1.Size = new Size(this.Width - marginLeft - marginRight , (this.Size.Height * 2 /3) - marginTop - marginBottom);
+        listBox1.Size = new Size(this.Width - marginLeft - marginRight, (this.Size.Height / 3) - marginTop - marginBottom - marginBottom - button1.Size.Height);
+        dataGridView1.Location = new Point(marginLeft, marginTop);
+        listBox1.Location = new Point(marginLeft, dataGridView1.Height + marginTop + marginBottom + button1.Height);
+        button1.Location = new Point(marginLeft, dataGridView1.Height + marginTop + marginBottom);
+      }
     }
 
     private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -77,13 +101,6 @@ namespace PromotionAlert
 
       // Activate the form.
       this.Activate();
-      if (Sizes != null)
-      {
-        if (Sizes.ContainsKey(this.dataGridView1.Name))
-          this.dataGridView1.Size = (System.Drawing.Size)Sizes[this.dataGridView1.Name];
-        if (Sizes.ContainsKey(this.listBox1.Name))
-          this.listBox1.Size = (System.Drawing.Size)Sizes[this.listBox1.Name];
-      }
     }
 
     async private void ShowAlert()
@@ -115,13 +132,22 @@ namespace PromotionAlert
               PromotionItems = tempPromotion.PromotionItems == null ? "" : tempPromotion.PromotionItems.Select(p => p.ItemName).Aggregate((p, n) => string.Format("{0},{1}", p, n)),
               PromotionTags = tempPromotion.PromotionItems == null ? "" : tempPromotion.PromotionItems.Select(p => p.Tag).Aggregate((p, n) => string.Format("{0},{1}", p, n)),
               ListTags = item.Tag,
-              ListItems = item.ItemName
+              ListItems = item.ItemName ,
+              Link = tempPromotion.Link,
+              Html = tempPromotion.Html
             });
           }
         }
       }
 
+      this.dataGridView1.Columns.Clear();
       this.dataGridView1.DataSource = matchPromotions;
+      this.dataGridView1.Columns.Insert(linkColumnIndex, new DataGridViewLinkColumn()
+      {
+        HeaderText = "PromotionName",
+        DataPropertyName = "Link",
+        LinkBehavior = LinkBehavior.SystemDefault,
+      });
     }
 
     private void button1_Click(object sender, EventArgs e)
